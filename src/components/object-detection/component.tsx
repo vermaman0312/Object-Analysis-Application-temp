@@ -20,6 +20,7 @@ const ObjectDetectionPageComponent = () => {
   const webcamRef = useRef<Webcam>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
 
   const runObjectDetection = async (net: CocoSsdModel) => {
     if (
@@ -71,6 +72,10 @@ const ObjectDetectionPageComponent = () => {
     }
   }, [webcamRef.current?.video?.readyState]);
 
+  const toggleCamera = () => {
+    setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"));
+  };
+
   return (
     <div className="border">
       {isLoading ? (
@@ -78,12 +83,24 @@ const ObjectDetectionPageComponent = () => {
       ) : (
         <div className="relative">
           {/* Webcam */}
-          <Webcam ref={webcamRef} className="w-96 h-96 rounded-md" muted />
+          <Webcam
+            ref={webcamRef}
+            videoConstraints={{ facingMode }}
+            className="w-96 h-96 rounded-md"
+            muted
+          />
           {/* Canvas for detection overlay */}
           <canvas
             ref={canvasRef}
             className="absolute top-0 left-0 z-50 w-96 h-96 rounded-md"
           />
+
+          <button
+            onClick={toggleCamera}
+            className="mt-4 p-2 bg-blue-500 text-white rounded"
+          >
+            Switch Camera
+          </button>
         </div>
       )}
     </div>
